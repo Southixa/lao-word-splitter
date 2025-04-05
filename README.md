@@ -1,6 +1,6 @@
 # Lao Word Splitter
 
-ເຄື່ອງມືສຳລັບແຍກປະໂຫຍກພາສາລາວ ອອກເປັນແຕ່ລະຄຳອີງຕາມໂຄງສ້າງພະຍາງ້ຳ.
+ເຄື່ອງມືສຳລັບແຍກປະໂຫຍກພາສາລາວ ອອກເປັນແຕ່ລະຄຳອີງຕາມໂຄງສ້າງພາສາ.
 
 A utility to split Lao language sentences into individual words based on syllable structure rules.
 
@@ -51,6 +51,12 @@ This function uses Lao syllable structure rules to determine word boundaries, ba
 - Mid-word characters (vowels, tone marks)
 - Special structures (like digraphs: ກວ, ຫວ)
 - Segmentation at transitions between Lao and non-Lao text
+
+## ປະສິດທິພາບ / Performance
+
+ອານຸພາບການຄຳນວນ (Time Complexity): **O(n)** ໝາຍຄວາມວ່າໄວຂອງຟັງຊັນຂຶ້ນຢູ່ກັບຄວາມຍາວຂອງປະໂຫຍກທີ່ປ້ອນເຂົ້າໄປ. ການແຍກປະໂຫຍກແມ່ນໄວ ແລະ ມີປະສິດທິພາບເນື່ອງຈາກການແຍກເກີດຂຶ້ນພຽງແຕ່ໃນຮອບດຽວເທົ່ານັ້ນໂດຍບໍ່ມີຮອບວົນຊ້ອນກັນ.
+
+Time Complexity: **O(n)** where n is the length of the input sentence. This means the algorithm's performance scales linearly with the input size. The segmentation is fast and efficient as it processes the text in a single pass without nested loops.
 
 ## ລິຂະສິດ / License
 
