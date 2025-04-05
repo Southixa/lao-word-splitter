@@ -1,6 +1,6 @@
 {
   "name": "lao-word-splitter",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A utility to split Lao language sentences into individual words",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
