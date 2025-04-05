@@ -1,0 +1,41 @@
+{
+  "name": "lao-word-splitter",
+  "version": "1.0.0",
+  "description": "A utility to split Lao language sentences into individual words",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "lao",
+    "language",
+    "nlp",
+    "word",
+    "segmentation",
+    "laos",
+    "tokenizer",
+    "syllable"
+  ],
+  "author": "Southixa Philavong",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/southixa/lao-word-splitter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/southixa/lao-word-splitter/issues"
+  },
+  "homepage": "https://github.com/southixa/lao-word-splitter#readme",
+  "devDependencies": {
+    "@types/jest": "^29.5.8",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist"
+  ]
+} 
