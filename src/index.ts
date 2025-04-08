@@ -63,23 +63,29 @@ function addWordToResult(currentWord: string, resultArray: string[], newWord: st
 }
 
 /**
- * ຟັງຊັນຊ່ວຍເຫຼືອສຳລັບຈັດການກັບຕົວອັກສອນ "ກວ"
- * Helper function to handle 'ກວ' sequence
+ * ຟັງຊັນຊ່ວຍເຫຼືອສຳລັບຈັດການກັບຕົວອັກສອນປະສົມກັບ "ວ" (ກວ, ຂວ, ຄວ)
+ * Helper function to handle consonant + 'ວ' sequences
  * 
  * ຕົວຢ່າງ:
  * "ຈົນກວ່າຈະ" ເມື່ອພົບ '່' ຫຼັງ 'ກວ':
- * handleKVSequence('ຈົນກວ', '່', words) => 'ກວ່' ແລະ words = ['ຈົນ']
+ * handleConsonantVSequence('ຈົນກວ', '່', words) => 'ກວ່' ແລະ words = ['ຈົນ']
+ * 
+ * "ຄວາມຮັກ" ເມື່ອພົບ 'າ' ຫຼັງ 'ຄວ':
+ * handleConsonantVSequence('ຄວ', 'າ', words) => 'ຄວາ' ແລະ words = []
+ * 
+ * "ຂວາງາມ" ເມື່ອພົບ 'າ' ຫຼັງ 'ຂວ':
+ * handleConsonantVSequence('ຂວ', 'າ', words) => 'ຂວາ' ແລະ words = []
  */
-function handleKVSequence(currentWord: string, char: string, resultArray: string[]): string {
+function handleConsonantVSequence(currentWord: string, char: string, resultArray: string[]): string {
   const secondLastChar = currentWord[currentWord.length - 2];
   const lastChar = currentWord[currentWord.length - 1];
-  const kvSequence = secondLastChar + lastChar; // 'ກວ'
-  const wordBeforeKV = currentWord.slice(0, -2);
+  const consonantVSequence = secondLastChar + lastChar; // e.g., 'ກວ', 'ຂວ', 'ຄວ'
+  const wordBeforeSequence = currentWord.slice(0, -2);
   
-  if (wordBeforeKV.length > 0) {
-    resultArray.push(wordBeforeKV);
+  if (wordBeforeSequence.length > 0) {
+    resultArray.push(wordBeforeSequence);
   }
-  return kvSequence + char;
+  return consonantVSequence + char;
 }
 
 /**
@@ -136,6 +142,32 @@ function handleVaOrOSequence(currentWord: string, char: string, resultArray: str
     resultArray.push(wordWithoutLast);
   }
   return lastConsonant + char;
+}
+
+/**
+ * ຟັງຊັນຊ່ວຍເຫຼືອສຳລັບຈັດການກັບຕົວອັກສອນປະສົມກັບ "ຣ" (ທຣ, ປຣ, ກຣ, ບຣ, ຟຣ)
+ * Helper function to handle consonant + 'ຣ' sequences
+ * 
+ * ຕົວຢ່າງ:
+ * "ທຣັມ" ເມື່ອພົບ 'ັ' ຫຼັງ 'ຣ':
+ * handleConsonantRSequence('ທຣ', 'ັ', words) => 'ທຣັ' ແລະ words = []
+ * 
+ * "ປຣິນເຕີ" ເມື່ອພົບ 'ິ' ຫຼັງ 'ຣ':
+ * handleConsonantRSequence('ປຣ', 'ິ', words) => 'ປຣິ' ແລະ words = []
+ * 
+ * "ກຣາມ" ເມື່ອພົບ 'າ' ຫຼັງ 'ຣ':
+ * handleConsonantRSequence('ກຣ', 'າ', words) => 'ກຣາ' ແລະ words = []
+ */
+function handleConsonantRSequence(currentWord: string, char: string, resultArray: string[]): string {
+  const secondLastChar = currentWord[currentWord.length - 2];
+  const lastChar = currentWord[currentWord.length - 1];
+  const consonantRSequence = secondLastChar + lastChar; // e.g., 'ທຣ', 'ປຣ', 'ກຣ', 'ບຣ', 'ຟຣ'
+  const wordBeforeSequence = currentWord.slice(0, -2);
+  
+  if (wordBeforeSequence.length > 0) {
+    resultArray.push(wordBeforeSequence);
+  }
+  return consonantRSequence + char;
 }
 
 /**
@@ -233,6 +265,14 @@ export function splitLao(sentence: string): string[] {
     // ຕົວຢ່າງ: "ປະເທດລາວ" ເມື່ອພົບ "ເ" ຫຼັງ "ະ"
     // currentWord = "ປະ" => words = ["ປະ"], currentWord = "ເ"
     if (LEADING_VOWELS.has(char)) {
+      // Special case: Don't split on second 'ເ' if previous char was also 'ເ'
+      // ຕົວຢ່າງ: "ເເຕກຕ່າງ" ເມື່ອພົບ "ເ" ທີສອງ ຫຼັງຈາກ "ເ" ທຳອິດ
+      // currentWord = "ເ" => currentWord = "ເເ"
+      if (char === 'ເ' && lastCharOfCurrentWord === 'ເ') {
+        currentWord += char;
+        continue;
+      }
+      
       currentWord = addWordToResult(currentWord, words, char);
       continue;
     }
@@ -267,11 +307,22 @@ export function splitLao(sentence: string): string[] {
         continue;
       }
       
-      // GUARD: Special case for 'ກວ' sequence
-      // ຕົວຢ່າງ: "ຈົນກວ່າຈະ" ເມື່ອພົບ "່" ຫຼັງ "ວ" ທີ່ນຳໜ້າດ້ວຍ "ກ"
-      // currentWord = "ຈົນກວ" => words = ["ຈົນ"], currentWord = "ກວ່"
-      if (currentWord.length >= 2 && lastCharOfCurrentWord === 'ວ' && secondLastChar === 'ກ') {
-        currentWord = handleKVSequence(currentWord, char, words);
+      // GUARD: Special case for consonant + 'ວ' sequences (ກວ, ຂວ, ຄວ)
+      // ຕົວຢ່າງ: 
+      // - "ຈົນກວ່າຈະ" ເມື່ອພົບ "່" ຫຼັງ "ວ" ທີ່ນຳໜ້າດ້ວຍ "ກ"
+      // - "ຄວາມຮັກ" ເມື່ອພົບ "າ" ຫຼັງ "ວ" ທີ່ນຳໜ້າດ້ວຍ "ຄ"
+      // - "ຂວາງາມ" ເມື່ອພົບ "າ" ຫຼັງ "ວ" ທີ່ນຳໜ້າດ້ວຍ "ຂ"
+      if (currentWord.length >= 2 && lastCharOfCurrentWord === 'ວ' && 
+          (secondLastChar === 'ກ' || secondLastChar === 'ຂ' || secondLastChar === 'ຄ')) {
+        currentWord = handleConsonantVSequence(currentWord, char, words);
+        continue;
+      }
+      
+      // GUARD: Special case for consonant + 'ຣ' sequences (ທຣ, ປຣ, ກຣ, ບຣ, ຟຣ)
+      if (currentWord.length >= 2 && lastCharOfCurrentWord === 'ຣ' && 
+          (secondLastChar === 'ທ' || secondLastChar === 'ປ' || secondLastChar === 'ກ' || 
+           secondLastChar === 'ບ' || secondLastChar === 'ຟ')) {
+        currentWord = handleConsonantRSequence(currentWord, char, words);
         continue;
       }
       
@@ -327,4 +378,4 @@ export function splitLao(sentence: string): string[] {
   
   // Filter out any empty strings
   return words.filter(word => word.length > 0);
-} 
+}
